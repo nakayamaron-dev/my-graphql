@@ -4,7 +4,7 @@ import client from "./client";
 import { SEARCH_REPOSITORIES } from "./graphql";
 
 const DEFAULT_STATE = {
-  first: 5,
+  first: 10,
   after: null,
   last: null,
   before: null,
@@ -52,7 +52,23 @@ class App extends Component {
             const unit = count === 1 ? "Repository" : "Repositories";
             const title = `Github Repositories Search Results - ${count} ${unit}`;
 
-            return <h2>{title}</h2>;
+            return (
+              <React.Fragment>
+                <h2>{title}</h2>;
+                <ul>
+                  {search.edges.map((edge) => {
+                    const node = edge.node;
+                    return (
+                      <li key={node.id}>
+                        <a href={node.url} target="_blank">
+                          {node.name}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </React.Fragment>
+            );
           }}
         </Query>
       </ApolloProvider>
