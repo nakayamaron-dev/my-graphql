@@ -3,8 +3,9 @@ import { ApolloProvider, Query } from "react-apollo";
 import client from "./client";
 import { SEARCH_REPOSITORIES } from "./graphql";
 
+const PER_PAGE = 10;
 const DEFAULT_STATE = {
-  first: 10,
+  first: PER_PAGE,
   after: null,
   last: null,
   before: null,
@@ -31,6 +32,24 @@ class App extends Component {
     event.preventDefault();
   }
 
+  goNext(search) {
+    this.setState({
+      first: PER_PAGE,
+      after: search.pageInfo.endCursor,
+      last: null,
+      before: null,
+    });
+  }
+
+  goPrevious(search) {
+    this.setState({
+      first: null,
+      after: null,
+      last: PER_PAGE,
+      before: search.pageInfo.startCursor,
+    });
+  }
+
   render() {
     const { query, first, last, before, after } = this.state;
 
@@ -54,19 +73,32 @@ class App extends Component {
 
             return (
               <React.Fragment>
-                <h2>{title}</h2>;
+                <h2>{title}</h2>
                 <ul>
                   {search.edges.map((edge) => {
                     const node = edge.node;
                     return (
                       <li key={node.id}>
-                        <a href={node.url} target="_blank">
+                        <a
+                          href={node.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
                           {node.name}
                         </a>
                       </li>
                     );
                   })}
                 </ul>
+                {console.log(search)}
+                {search.pageInfo.hasPreviousPage === true ? (
+                  <button onClick={this.goPrevious.bind(this, search)}>
+                    Previous
+                  </button>
+                ) : null}
+                {search.pageInfo.hasNextPage === true ? (
+                  <button onClick={this.goNext.bind(this, search)}>Next</button>
+                ) : null}
               </React.Fragment>
             );
           }}
