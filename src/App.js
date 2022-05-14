@@ -33,7 +33,6 @@ class App extends Component {
 
   render() {
     const { query, first, last, before, after } = this.state;
-    console.log(query);
 
     return (
       <ApolloProvider client={client}>
@@ -47,8 +46,13 @@ class App extends Component {
           {({ loading, error, data }) => {
             if (loading) return "Loading...";
             if (error) return `Error! ${error.message}`;
-            console.log(data);
-            return <div></div>;
+
+            const search = data.search;
+            const count = search.repositoryCount;
+            const unit = count === 1 ? "Repository" : "Repositories";
+            const title = `Github Repositories Search Results - ${count} ${unit}`;
+
+            return <h2>{title}</h2>;
           }}
         </Query>
       </ApolloProvider>
