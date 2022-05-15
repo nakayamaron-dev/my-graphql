@@ -32,9 +32,7 @@ const StarButton = (props) => {
         },
       ]}
     >
-      {(addOrRemoveStar) => (
-        <StarStatus addOrRemoveStar={addOrRemoveStar}></StarStatus>
-      )}
+      {(addOrRemoveStar) => <StarStatus addOrRemoveStar={addOrRemoveStar} />}
     </Mutation>
   );
 };
@@ -45,7 +43,7 @@ const DEFAULT_STATE = {
   after: null,
   last: null,
   before: null,
-  query: "フロントエンドエンジニア",
+  query: "",
 };
 
 class App extends Component {
@@ -53,19 +51,15 @@ class App extends Component {
     super(props);
     this.state = DEFAULT_STATE;
 
-    this.handleChange = this.handleChange.bind(this);
+    this.myRef = React.createRef();
     this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  handleChange(event) {
-    this.setState({
-      ...DEFAULT_STATE,
-      query: event.target.value,
-    });
   }
 
   handleSubmit(event) {
     event.preventDefault();
+    this.setState({
+      query: this.myRef.current.value,
+    });
   }
 
   goNext(search) {
@@ -92,7 +86,8 @@ class App extends Component {
     return (
       <ApolloProvider client={client}>
         <form onSubmit={this.handleSubmit}>
-          <input value={query} onChange={this.handleChange} />
+          <input ref={this.myRef} />
+          <input type="submit" value="Submit" />
         </form>
         <Query
           query={SEARCH_REPOSITORIES}
@@ -126,7 +121,7 @@ class App extends Component {
                         <StarButton
                           node={node}
                           {...{ query, first, last, before, after }}
-                        ></StarButton>
+                        />
                       </li>
                     );
                   })}
